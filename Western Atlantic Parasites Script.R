@@ -1,7 +1,6 @@
 #Skylar Hopkins, NCEAS 2017
 
 ###To Do list###
-#Double check the fishbase list - are there freshwater spp?
 #Compare/combine Strona and NMH
 #Look at which fish spp we're missing parasites for
 #Use PaCO to predict parasites for missing fish spp?
@@ -46,6 +45,17 @@ FishSpp[129,] #ex: subspp example
 #View(FishSpp)
 
 #########################################################################################
+#########################################################################################
+#########################################################################################
+#Important note: for now, we're assuming that all parasites ever reported from a host spp
+#can infect that host in Mass. So we're including PAL and NEO in Strona dataset,
+#and we aren't limiting to US in NHM, because location info often missing
+#############################IGNORE LOCATION##########################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#########################################################################################
 ####Create a list of western Atlantic parasite spp using Strona dataset###################
 #########################################################################################
 #Strona et al. (2013) published a list of ~11,800 fish parasites which is available at
@@ -59,16 +69,17 @@ names(Strona)
 head(Strona$H_SP) 
 WAHostsandParasites<-subset(Strona, H_SP %in% FishSpp$LatinName)
 
-#Because NAs are in the dataset as "na", a bunch of the quantitative
-#variables are character vectors
-WAHostsandParasites %>% select(H_SP, MaxL, K, Y, Ym, T, AOO)
-names(WAHostsandParasites)
-WAHostsandParasites[c(10:14,18:20)]<-lapply(WAHostsandParasites[c(10:14,18:20)], as.numeric)
-#View(WAHostsandParasites)
+#We get duplicates when a parasite was recorded in multiple geographic regions
+WAHostsandParasites$UniqueHspPsp<-paste(WAHostsandParasites$H_SP, WAHostsandParasites$P_SP, "")
+length(WAHostsandParasites$UniqueHspPsp)
+length(unique(WAHostsandParasites$UniqueHspPsp))
 
-length(unique(WAHostsandParasites$H_SP)) #only 83 of the fish spp are in the Strona database?
+#for now, let's just pick the first host-parasite combo and ignore geography
+WAHostsandParasites<-WAHostsandParasites[!duplicated(WAHostsandParasites$UniqueHspPsp),]
+
+length(unique(WAHostsandParasites$H_SP)) #only 81 of the fish spp are in the Strona database?
 MissingHosts<-FishSpp$LatinName[!(FishSpp$LatinName %in% WAHostsandParasites$H_SP)] #list of missing host spp
-MissingHosts
+MissingHosts #52 missing
 
 #spot checking shows that at least some missing host spp have parasites listed in Londom NHM Helminth database
 findHost(genus = "Acanthurus", species = "chirurgus", removeDuplicates = T, speciesOnly = T)
@@ -86,7 +97,13 @@ hist(table(WAHostsandParasites$H_SP)) #k - dplyr was slower
 
 #Make a dataframe w/ host spp as row/observation, spp richness as tally,
 #and carry over info for max host length (MaxL) and some other traits 
-WAHostsandParasites <- WAHostsandParasites %>% select(H_SP, MaxL, K, Y, Ym, T, AOO)
+WAHostsandParasites <- WAHostsandParasites %>% select(P_SP, H_SP, MaxL, K, Y, Ym, T, AOO)
+
+#Because NAs are in the dataset as "na", a bunch of the quantitative
+#variables are character vectors
+names(WAHostsandParasites)
+WAHostsandParasites[c(3:6)]<-lapply(WAHostsandParasites[c(3:6)], as.numeric)
+#View(WAHostsandParasites)
 
 SppRichness<-aggregate(WAHostsandParasites, by = list(WAHostsandParasites$H_SP), FUN=max)
 View(SppRichness)
@@ -101,7 +118,7 @@ plot(SppRichness$ParasiteRichness~SppRichness$T)
 plot(SppRichness$ParasiteRichness~SppRichness$AOO)
 
 ##################################################################################
-############Make a full list, including host spp not in Strona##################
+############Make a list using NHM and helminthR##################
 ##################################################################################
 head(FishSpp)
 
@@ -147,13 +164,149 @@ ParasiteData<-(subset(ParasiteData, !(ParasiteData$Parasite %in% ProblemEntries)
 #For Atlantic Spanish mackerel, the parasites in the subspp are repeats, so remove
 ParasiteData<-subset(ParasiteData, subset=ParasiteData$Host!="Scomberomorus maculatus sier"|ParasiteData$Host!="Scomberomorus maculatus sierra"|ParasiteData$Host!="Scomberomorus maculatus sier")
 
-ParasiteData[ParasiteData$Host=="Scomberomorus maculatus"|ParasiteData$Host=="Scomberomorus maculatus sier"|ParasiteData$Host=="Scomberomorus maculatus sierra"|ParasiteData$Host=="Scomberomorus maculatus sier",]
-
-#I don't know why slake is in here, because it's freshwater?
-ParasiteData<-(subset(ParasiteData, subset=ParasiteData$Host != "Salvelinus fontinalis x namaycush"|ParasiteData$Host!="Salvelinus fontinalis"))
-
 View(ParasiteData)
 
+#################################################################################
+##################Compare/combine Strona and NHM databases#########################
 ##################################################################################
-############Use PaCO to guess which parasite spp fish will have?##################
-##################################################################################
+WAHostsandParasites$UniqueHspPsp<-paste(WAHostsandParasites$H_SP, WAHostsandParasites$P_SP, "")
+length(WAHostsandParasites$UniqueHspPsp)
+head(sort(WAHostsandParasites$UniqueHspPsp), n = 10)
+
+ParasiteData$UniqueHspPsp<-paste(ParasiteData$Host, ParasiteData$Parasite, "")
+length(ParasiteData$UniqueHspPsp)
+head(sort(ParasiteData$UniqueHspPsp), n = 10)
+
+#They're the same length? But have diff spp?
+WAHostsandParasites$UniqueHspPsp %in% ParasiteData$UniqueHspPsp
+ParasiteData$UniqueHspPsp %in% WAHostsandParasites$UniqueHspPsp
+
+#I suppose this is because Strona has parasites from other sources, and NHM
+#has parasites that Strona excluded for some reason
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################Only Nearctic Parasites##########################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+
+#########################################################################################
+####Create a list of western Atlantic parasite spp using Strona dataset###################
+#########################################################################################
+Strona <- read_csv("~/Documents/Smithsonian Proposal/StronaFishParasiteDataset.csv")
+names(Strona)
+
+#Strona$H_SP corresponds to our FishSpp$LatinName category, and both should be based on FishBase names
+#so reduce dataset to only the host spp we care about
+head(Strona$H_SP) 
+MAHostsandParasites<-subset(Strona, H_SP %in% FishSpp$LatinName)
+MAHostsandParasites$UniqueHspPsp<-paste(MAHostsandParasites$H_SP, MAHostsandParasites$P_SP, "")
+
+##How many species pairs have unknown geography? Strona used "na"
+length(which(MAHostsandParasites$GEO=="na")) #170
+
+#Let's keep a list of them to check later, but then remove them 
+ParasitesWithoutGeo<-MAHostsandParasites$UniqueHspPsp[MAHostsandParasites$GEO=="na"]
+
+#Just keep the confirmed Nearctic parasites
+MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$GEO=="NEA",]
+
+length(MAHostsandParasites$UniqueHspPsp)
+length(unique(MAHostsandParasites$UniqueHspPsp))
+View(MAHostsandParasites)
+
+#Let's check for duplicates - first, some that aren't EXACT duplicates
+#There is Caballeronema pseudoargmentosus and Caballeronema pseudoargumentatus,
+#let's go with the latter, from NHM, citation Caballeronema pseudoargumentatus Appy & Dadswell, 1978   
+View(MAHostsandParasites[MAHostsandParasites$P_SP=="Caballeronema pseudoargmentosus"|MAHostsandParasites$P_SP=="Caballeronema pseudoargumentatus",])
+MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$P_SP!="Caballeronema pseudoargmentosus",]
+
+#There is both (Ariopsis felis) Pseudacanthostomum panamense and Pseudoacanthostomum panamense
+#which I think are the same? So let's only keep pseudo for now
+View(MAHostsandParasites[MAHostsandParasites$P_SP=="Pseudacanthostomum panamense"|MAHostsandParasites$P_SP=="Pseudoacanthostomum panamense",])
+MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$P_SP!="Pseudacanthostomum panamense",]
+
+#Now exact duplicates - mostly in Alosa pseudoharengus. As far as I can tell,
+#everything about these is identical, so just pick the first one in all code.
+#But here are the specific pairs:
+#Alosa pseudoharengus Acanthocephalus dirus
+#Alosa pseudoharengus Echinorhynchus gadi
+#Alosa pseudoharengus Paratenuisentis ambiguus
+#icropogonias undulatus Leptorhynchoides thecatus
+#Paralichthys dentatus Southwellina hispida
+
+View(MAHostsandParasites[MAHostsandParasites$UniqueHspPsp=="Alosa pseudoharengus Acanthocephalus dirus ",])
+View(Strona[Strona$P_SP=="Acanthocephalus dirus" & Strona$H_SP=="Alosa pseudoharengus",])
+
+MAHostsandParasites<-MAHostsandParasites[!duplicated(MAHostsandParasites$UniqueHspPsp),]
+
+#NOTE: Worried that we have a few cases where the same parasite in a host spp
+#is counted as two, due to one misspecified genus. Should fix later.
+
+#Not all of the MA host spp from the FishBase list had parasites in the Strona database
+length(unique(MAHostsandParasites$H_SP)) #only 58 of the fish spp are in the Strona database
+MissingHosts<-FishSpp$LatinName[!(FishSpp$LatinName %in% MAHostsandParasites$H_SP)] #list of missing host spp
+MissingHosts #75 missing
+
+#Make a dataframe w/ host spp as row/observation, spp richness as tally,
+#and carry over info for max host length (MaxL) and some other traits 
+MAHostsandParasites <- MAHostsandParasites %>% select(P_SP, H_SP, GEO, MaxL, K, Y, Ym, T, AOO)
+
+#Because NAs are in the dataset as "na", a bunch of the quantitative
+#variables are character vectors
+names(MAHostsandParasites)
+MAHostsandParasites[c(4:9)]<-lapply(MAHostsandParasites[c(4:9)], as.numeric)
+#View(WAHostsandParasites)
+
+#How many unique parasites?
+length(unique(MAHostsandParasites$P_SP))
+
+#Parasite spp richness histogram
+SppRichness<-aggregate(MAHostsandParasites, by = list(MAHostsandParasites$H_SP), FUN=max)
+SppRichness<-SppRichness[,-1]
+SppRichness$ParasiteRichness<-aggregate(MAHostsandParasites$P_SP, by = list(MAHostsandParasites$H_SP), FUN=length)[,2]
+hist(SppRichness$ParasiteRichness, breaks = 30)
+min(SppRichness$ParasiteRichness); mean(SppRichness$ParasiteRichness); max(SppRichness$ParasiteRichness)
+#1; 7.534483; 55
+SppRichness[SppRichness$ParasiteRichness > 50,] #Micropogonias undulatus has the most known parasites (Atlantic Croaker)
+
+plot(SppRichness$ParasiteRichness~SppRichness$MaxL)
+plot(SppRichness$ParasiteRichness~SppRichness$K)
+plot(SppRichness$ParasiteRichness~SppRichness$Y)
+plot(SppRichness$ParasiteRichness~SppRichness$Ym)
+plot(SppRichness$ParasiteRichness~SppRichness$T)
+plot(SppRichness$ParasiteRichness~SppRichness$AOO)
+hist(SppRichness$ParasiteRichness, breaks=30)
+
+MissingHosts
+
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#########################Host abundance data##################################
+#########################################################################################
+#########################################################################################
+#########################################################################################
+#http://www.iobis.org/explore/#/dataset/1435
+AbundData <- read_csv("~/Documents/Western Atlantic Parasites/121cba69f62b11af10f868d0ab8913334a50f6a3/121cba69f62b11af10f868d0ab8913334a50f6a3.csv")
+
+#Contains standardized bottom trawl surveys from all seasons and whatever "Deepwater Systematics" is
+unique(AbundData$collectionCode)
+
+#I think Autumn is the longest (1963 to present), so let's start there
+AbundData<-AbundData[AbundData$collectionCode=="FALL NMFS NEFSC BOTTOM TRAWL SURVEY",]
+
+#Only keep the fish records (no sharks, either)
+unique(AbundData$class)
+AbundData<-AbundData[AbundData$class=="Actinopterygii",]
+
+#Not everything is IDed to spp. 
+unique(AbundData$scientificName)
+
+#Pull out things in the FishBase list for MA
+#Not all of them are present - because they're nearshore fish?
+AbundData<-subset(AbundData, AbundData$scientificName %in% FishSpp$LatinName)
+unique(AbundData$scientificName)
+unique(FishSpp$LatinName)
