@@ -1,0 +1,175 @@
+Family,LatinName,Author,Lengthcm,TrophicLevel,Resilience,IntrinsicVulnerability,IUCN
+Belonidae,Ablennes hians,"(Valenciennes, 1846)",140.00 TL,4.5,"Medium, (Assuming tmax>3; K=0.6)",40,LC
+Acipenseridae,Acipenser brevirostrum,"Lesueur, 1818",143.00 TL,3.25,"Very low, (K=0.04; tm=14-17; tmax=67; Fec=48,000)",83,VU
+Acipenseridae,Acipenser oxyrinchus,"Mitchill, 1815",430.00 TL,3.38,"Very low, (K=0.03; tm=7-34; tmax=60; Fec=1.03 million)",85,NT
+Albulidae,Albula vulpes,"(Linnaeus, 1758)",104.00 TL,3.73,"Low, (K=0.3; tm=2; tmax=20)",43,NT
+Carangidae,Alectis ciliaris,"(Bloch, 1787)",150.00 TL,3.95,"Low, (Preliminary K or Fecundity.)",69,LC
+Clupeidae,Alosa aestivalis,"(Mitchill, 1814)",40.00 SL,3.81,"Medium, (K=0.18; tm=4; Fec=45,800)",51,VU
+Clupeidae,Alosa mediocris,"(Mitchill, 1814)",60.00 SL,4.12,"Medium, (K=0.3)",41,LC
+Clupeidae,Alosa pseudoharengus,"(Wilson, 1811)",40.00 SL,3.39,"Medium, (K=0.2; tm=3.6; Fec=2,180)",29,LC
+Clupeidae,Alosa sapidissima,"(Wilson, 1811)",76.00 TL,3.48,"Low, (K=0.14; tm=4.7)",51,LC
+Monacanthidae,Aluterus schoepfii,"(Walbaum, 1792)",61.00 TL,2.02,"Low, (Preliminary K or Fecundity.)",55,LC
+Monacanthidae,Aluterus scriptus,"(Osbeck, 1765)",110.00 TL,2.81,"Medium, (Assuming tm=3-4)",69,LC
+Ammodytidae,Ammodytes dubius,"Reinhardt, 1837",25.00 TL,3.2,"Medium, (K=0.33-0.38; tmax=9)",33,Not Evaluated
+Engraulidae,Anchoa hepsetus,"(Linnaeus, 1758)",15.30 TL,3.44,"High, (tm=1; Fec=5700)",16,LC
+Engraulidae,Anchoa mitchilli,"(Valenciennes, 1848)",10.00 SL,3.46,"High, (K>0.30; tmax=3)",23,LC
+Anguillidae,Anguilla rostrata,"(Lesueur, 1817)",152.00 TL,3.83,"Medium, (tm=3-6; Fec=5,000,000)",83,EN
+Gasterosteidae,Apeltes quadracus,"(Mitchill, 1815)",6.40 TL,3.23,"High, (K=0.84; tmax=3)",16,LC
+Sparidae,Archosargus probatocephalus,"(Walbaum, 1792)",91.00 TL,3.53,"Medium, (K=0.4; tmax=20)",36,LC
+Uranoscopidae,Astroscopus guttatus,"Abbott, 1860",59.00 TL,4.5,"Medium, (Preliminary K or Fecundity.)",52,LC
+Ariidae,Bagre marinus,"(Mitchill, 1815)",69.00 TL,3.51,"Low, (Fec = 70)",56,LC
+Sciaenidae,Bairdiella chrysoura,"(Lacep重e, 1802)",30.00 TL,3.59,"High, (K=3.06(?); tmax=1.1)",21,LC
+Balistidae,Balistes capriscus,"Gmelin, 1789",60.00 TL,4.06,"Medium, (K=0.18-0.43; tm=1)",49,VU
+Dasyatidae,Bathytoshia centroura,"(Mitchill, 1815)",300.00 TL,3.7,"Very low, (Fec=2-6)",81,Not Evaluated
+Clupeidae,Brevoortia tyrannus,"(Latrobe, 1802)",50.00 TL,3.23,"Medium, (K=0.4; tm=1-3; Fec=38,000)",30,LC
+Carangidae,Carangoides bartholomaei,"(Cuvier, 1833)",100.00 TL,4.48,"High, (Fec > 7 million eggs)",51,LC
+Carangidae,Caranx crysos,"(Mitchill, 1815)",70.00 TL,4.13,"Medium, (K=0.32-0.38; tmax=11; Fec=41,000)",34,LC
+Carangidae,Caranx hippos,"(Linnaeus, 1766)",124.00 TL,3.56,"Medium, (Assuming tm 3-4)",41,LC
+Carangidae,Caranx latus,"Agassiz, 1831",101.00 FL,4.16,"Medium, (Preliminary K or Fecundity.)",58,LC
+Carcharhinidae,Carcharhinus leucas,"(Mler & Henle, 1839)",400.00 TL,4.31,"Very low, (K=0.04-0.08; tm=6-18; tmax=28)",88,NT
+Carcharhinidae,Carcharhinus obscurus,"(Lesueur, 1818)",420.00 TL,4.28,"Very low, (rm=0.02; also Musick et al. 2000 (Ref. 36717))",88,VU
+Carcharhinidae,Carcharhinus plumbeus,"(Nardo, 1827)",250.00 TL,4.27,"Very low, (rm=0.028; K=0.05-0.09; tm=12-16; tmax=34; Fec=5-12)",88,VU
+Odontaspididae,Carcharias taurus,"Rafinesque, 1810",330.00 TL,4.5,"Very low, (Fec=2; K=0.14-0.17; tmax=17)",58,VU
+Serranidae,Centropristis striata,"(Linnaeus, 1758)",66.00 TL,3.89,"Medium, (K=0.23-0.46; tmax=20)",31,LC
+Cetorhinidae,Cetorhinus maximus,"(Gunnerus, 1765)",1520.00 TL,3.2,"Very low, (Fec=1-2; Musick et al. 2000 (Ref. 36717))",86,VU
+Ephippidae,Chaetodipterus faber,"(Broussonet, 1782)",91.00 TL,3.52,"Medium, (tmax=8; tm=1; K=0.34)",37,LC
+Chaetodontidae,Chaetodon ocellatus,"Bloch, 1787",20.00 TL,3.7,"High, (Preliminary K or Fecundity.)",15,LC
+Blenniidae,Chasmodes bosquianus,"(Lacep重e, 1800)",15.00 TL,2,"High, (Preliminary K or Fecundity.)",26,LC
+Diodontidae,Chilomycterus schoepfii,"(Walbaum, 1792)",27.90 TL,3.5,,15,LC
+Carangidae,Chloroscombrus chrysurus,"(Linnaeus, 1766)",65.00 TL,3.54,"Medium, (K=0.22-0.56)",28,LC
+Paralichthyidae,Citharichthys macrops,"Dresel, 1885",20.00 TL,3.5,"High, (Preliminary K or Fecundity.)",24,LC
+Paralichthyidae,Citharichthys spilopterus,"Gther, 1862",20.00 TL,3.57,"Medium, (Preliminary K or Fecundity.)",28,LC
+Clupeidae,Clupea harengus,"Linnaeus, 1758",45.00 SL,3.38,"Medium, (rm=0.1-0.5; K=0.2-0.6; tm=2-5; tmax=25; Fec=17,300-301,000)",39,LC
+Congridae,Conger oceanicus,"(Mitchill, 1818)",230.00 TL,4.5,"Low, (Assuming tm>4)",84,LC
+Gobiidae,Ctenogobius boleosoma,"(Jordan & Gilbert, 1882)",7.50 TL,3.25,"High, (Preliminary K or Fecundity.)",16,LC
+Cyclopteridae,Cyclopterus lumpus,"Linnaeus, 1758",61.00 TL,3.84,"Low, (K=0.12; tm=3-5; tmax=13; Fec=100,000)",47,Not Evaluated
+Sciaenidae,Cynoscion nebulosus,"(Cuvier, 1830)",100.00 TL,3.98,"Medium, (K=0.2-0.3; tmax=18; tm=1; Fec=1 million)",58,LC
+Sciaenidae,Cynoscion nothus,"(Holbrook, 1848)",36.00 TL,3.74,"Medium, (K=0.22)",38,LC
+Sciaenidae,Cynoscion regalis,"(Bloch & Schneider, 1801)",98.00 TL,3.77,"Medium, (K=0.26-0.3; Fec = 45,000)",45,Not Evaluated
+Cyprinodontidae,Cyprinodon variegatus,"Lacep重e, 1803",9.00 TL,2.9,"Medium, (Assuming tm<1 and Fec<1000)",20,LC
+Gerreidae,Diapterus auratus,"Ranzani, 1842",34.00 TL,2.44,"High, (Preliminary K or Fecundity.)",26,LC
+Sparidae,Diplodus holbrookii,"(Bean, 1878)",46.00 TL,3.07,"Medium, (Preliminary K or Fecundity.)",50,LC
+Rajidae,Dipturus laevis,"(Mitchill, 1818)",152.00 TL,3.97,"Low, (Fec assumed to be <100)",69,EN
+Clupeidae,Dorosoma cepedianum,"(Lesueur, 1818)",57.00 FL,2.4,"Medium, (tm=2; tmax=6)",30,LC
+Echeneidae,Echeneis naucrates,"Linnaeus, 1758",110.00 TL,3.68,"Medium, (Assuming Fec < 10,000)",54,LC
+Elopidae,Elops saurus,"Linnaeus, 1766",100.00 TL,3.49,"Medium, (K=0.22-0.3; tm=2)",38,LC
+Esocidae,Esox americanus,"Gmelin, 1789",39.40 FL,3.65,"Medium, (tmax=8; Fec = 186)",42,LC
+Paralichthyidae,Etropus crossotus,"Jordan & Gilbert, 1882",20.00 TL,3.49,"High, (tmax=1.2; k >0.3)",27,LC
+Paralichthyidae,Etropus microstomus,"(Gill, 1864)",13.00 TL,3.41,"High, (Preliminary K or Fecundity.)",16,Not Evaluated
+Dussumieriidae,Etrumeus sadina,"(Mitchill, 1814)",33.00 TL,3.56,"Medium, (K=0.13-0.8; tm=1.7; tmax=5)",16,LC
+Gerreidae,Eucinostomus argenteus,"Baird & Girard, 1855",21.00 TL,3.24,"Medium, (Preliminary K or Fecundity.)",30,LC
+Gerreidae,Eucinostomus gula,"(Quoy & Gaimard, 1824)",25.50 TL,2.68,"Medium, (K=0.3)",32,LC
+Scombridae,Euthynnus alletteratus,"(Rafinesque, 1810)",122.00 TL,4.28,"Medium, (K=0.13-0.22; tm=2; tmax=8; Fec=71,000)",57,LC
+Gobiidae,Evorthodus lyricus,"(Girard, 1858)",15.00 TL,3.38,"High, (Preliminary K or Fecundity.)",27,LC
+Fundulidae,Fundulus heteroclitus,"(Linnaeus, 1766)",15.00 TL,3.59,"Medium, (tm<1; tmax=4)",16,LC
+Fundulidae,Fundulus luciae,"(Baird, 1855)",5.00 TL,3.15,"High, (Preliminary K or Fecundity.)",10,LC
+Fundulidae,Fundulus majalis,"(Walbaum, 1792)",18.00 TL,3.35,"High, (Preliminary K or Fecundity.)",24,LC
+Fundulidae,Fundulus pulvereus,"(Evermann, 1892)",6.50 TL,3.19,"High, (Preliminary K or Fecundity.)",10,LC
+Gadidae,Gadus morhua,"Linnaeus, 1758",200.00 TL,4.09,"Medium, (rm=0.2-1.1; also (Ref. 36717))",65,VU
+Gasterosteidae,Gasterosteus aculeatus,"Linnaeus, 1758",11.00 TL,3.31,"High, (K=0.6-1.8; tm=1; tmax=4; Fec=80)",10,LC
+Gobiesocidae,Gobiesox strumosus,"Cope, 1870",8.00 TL,3.25,"Medium, (Preliminary K or Fecundity.)",33,LC
+Gobiidae,Gobiosoma bosc,"(Lacep重e, 1800)",6.00 TL,3.24,"High, (Preliminary K or Fecundity.)",13,LC
+Gobiidae,Gobiosoma ginsburgi,"Hildebrand & Schroeder, 1928",6.00 TL,3.24,"High, (Preliminary K or Fecundity.)",13,LC
+Gymnuridae,Gymnura altavela,"(Linnaeus, 1758)",400.00 WD,4.5,"Very low, (Fec 4-7)",51,VU
+Gymnuridae,Gymnura micrura,"(Bloch & Schneider, 1801)",137.00 WD,3.56,"Very low, (Fec=3)",50,Data Deficient
+Rhinochimaeridae,Harriotta raleighana,"Goode & Bean, 1895",120.00 OT,3.55,"Low, (Assuming Fec <100)",45,LC
+Hemiramphidae,Hemiramphus brasiliensis,"(Linnaeus, 1758)",55.00 TL,2.28,"Medium, (K=0.58 questionable; assuming tmax>3)",27,LC
+Hemitripteridae,Hemitripterus americanus,"(Gmelin, 1789)",64.00 TL,4.45,"Very low, (Preliminary K or Fecundity.)",64,Not Evaluated
+Syngnathidae,Hippocampus erectus,"Perry, 1810",19.00 OT,3.46,"High, (K=0.34; tmax=1; Fec=1,552)",31,VU
+Paralichthyidae,Hippoglossina oblonga,"(Mitchill, 1815)",41.00 TL,4.29,"Medium, (Preliminary K or Fecundity.)",39,LC
+Dasyatidae,Hypanus americanus,"(Hildebrand & Schroeder, 1928)",200.00 WD,3.51,"Very low, (Fec=3-4)",77,Not Evaluated
+Dasyatidae,Hypanus sabinus,"(Lesueur, 1824)",61.00 WD,3.45,"Very low, (K=0.26-0.31; Fec assumed <10)",76,Not Evaluated
+Dasyatidae,Hypanus say,"(Lesueur, 1817)",100.00 WD,3.7,"Low, (Assuming fecundity<100)",67,Not Evaluated
+Centrolophidae,Hyperoglyphe perciformis,"(Mitchill, 1818)",91.00 TL,3.93,"Low, (Preliminary K or Fecundity.)",57,LC
+Hemiramphidae,Hyporhamphus meeki,"Banford & Collette, 1993",18.00 SL,2.81,"High, (Preliminary K or Fecundity.)",14,LC
+Blenniidae,Hypsoblennius hentz,"(Lesueur, 1825)",10.00 TL,2.77,"High, (Preliminary K or Fecundity.)",21,LC
+Ostraciidae,Lactophrys trigonus,"(Linnaeus, 1758)",55.00 TL,3.29,"High, (Fec assumed to be > 10,000)",32,LC
+Tetraodontidae,Lagocephalus laevigatus,"(Linnaeus, 1766)",100.00 TL,4.02,"Medium, (Preliminary K or Fecundity.)",54,LC
+Sparidae,Lagodon rhomboides,"(Linnaeus, 1766)",40.00 TL,3.4,"Medium, (tmax=7; k >0.30)",34,LC
+Sciaenidae,Larimus fasciatus,"Holbrook, 1855",25.00 TL,3.6,"High, (K=0.98)",16,LC
+Sciaenidae,Leiostomus xanthurus,"Lacep重e, 1802",36.00 TL,3.23,"High, (K=0.4; tmax=4)",29,LC
+Rajidae,Leucoraja erinacea,"(Mitchill, 1825)",54.00 TL,3.61,"Low, (K=0.29-0.35; tm=4.5; Fec=10; tmax=12)",50,NT
+Rajidae,Leucoraja ocellata,"(Mitchill, 1815)",110.00 TL,4.43,"Very low, (tmax=20.8; tm=11-12; Fec assumed to be <100)",56,EN
+Lophiidae,Lophius americanus,"Valenciennes, 1837",120.00 TL,4.51,"Low, (K=0.06-0.1; tmax=30; Fec=300,000)",77,Not Evaluated
+Fundulidae,Lucania parva,"(Baird & Girard, 1855)",6.20 TL,3.18,"High, (Preliminary K or Fecundity.)",10,LC
+Lutjanidae,Lutjanus griseus,"(Linnaeus, 1758)",89.00 TL,4.23,"Medium, (K=0.10; tm=2-3; tmax=21)",40,LC
+Megalopidae,Megalops atlanticus,"Valenciennes, 1847",250.00 TL,4.16,"Low, (K=0.07-0.10; tmax=55; Fec>1 million)",76,VU
+Atherinopsidae,Membras martinica,"(Valenciennes, 1835)",12.50 TL,3.19,"High, (Preliminary K or Fecundity.)",13,LC
+Atherinopsidae,Menidia beryllina,"(Cope, 1867)",15.00 TL,3.17,"High, (tmax=1)",15,LC
+Atherinopsidae,Menidia menidia,"(Linnaeus, 1766)",15.00 TL,3.19,"High, (K=1.1-1.4; tmax=2)",13,LC
+Sciaenidae,Menticirrhus americanus,"(Linnaeus, 1758)",50.00 TL,3.4,"Medium, (tm=2)",38,LC
+Sciaenidae,Menticirrhus littoralis,"(Holbrook, 1847)",48.30 TL,3.92,"Medium, (Assuming tm <4)",33,LC
+Sciaenidae,Menticirrhus saxatilis,"(Bloch & Schneider, 1801)",46.00 TL,3.56,"High, (K=0.5)",26,LC
+Merlucciidae,Merluccius bilinearis,"(Mitchill, 1814)",76.00 TL,4.49,"Medium, (K=0.18-0.4;tm=2-3; tmax=12)",54,NT
+Gobiidae,Microgobius thalassinus,"(Jordan & Gilbert, 1883)",6.40 TL,3.25,"High, (K>1)",10,LC
+Sciaenidae,Micropogonias undulatus,"(Linnaeus, 1766)",55.00 TL,4,"Medium, (K=0.2-0.27; tm=1-2; tmax=5)",34,LC
+Myliobatidae,Mobula birostris,"(Walbaum, 1792)",910.00 WD,3.46,"Very low, (tm=6; tmax>20; Fec=1)",78,VU
+Moronidae,Morone saxatilis,"(Walbaum, 1792)",200.00 TL,4.65,"Low, (K=0.12; tm=5-7; tmax=30; Fec=14,000)",61,LC
+Mugilidae,Mugil cephalus,"Linnaeus, 1758",100.00 SL,2.48,"Medium, (K=0.09-0.15; tm=2-6; tmax=16; Fec=1.6 million)",50,LC
+Mugilidae,Mugil curema,"Valenciennes, 1836",90.00 TL,2.01,"Medium, (tm=2-3; Fec=>50,000)",59,LC
+Triakidae,Mustelus canis,"(Mitchill, 1815)",150.00 TL,3.64,"Low, (K=0.04-0.43; tm=2-5; tmax=7; Fec= 4-20)",87,NT
+Serranidae,Mycteroperca microlepis,"(Goode & Bean, 1879)",145.00 TL,3.65,"Medium, (K=0.12-0.16; tm=3-8; tmax=16; Fec>10,000)",68,LC
+Myliobatidae,Myliobatis freminvillei,"Lesueur, 1824",100.00 WD,3.49,"Very low, (Fec=4-8)",60,Data Deficient
+Cottidae,Myoxocephalus octodecemspinosus,"(Mitchill, 1814)",46.00 TL,3.62,"High, (Preliminary K or Fecundity.)",24,Not Evaluated
+Carangidae,Oligoplites saurus,"(Bloch & Schneider, 1801)",35.00 TL,4.33,"High, (Preliminary K or Fecundity.)",25,Not Evaluated
+Ophidiidae,Ophidion marginatum,"DeKay, 1842",25.00 TL,3.57,"High, (Preliminary K or Fecundity.)",25,LC
+Clupeidae,Opisthonema oglinum,"(Lesueur, 1818)",38.00 TL,3.27,"Medium, (tm=1-3; tmax=8)",24,LC
+Batrachoididae,Opsanus tau,"(Linnaeus, 1766)",43.20 TL,3.84,"Low, (K=0.11; tmax=8)",50,LC
+Haemulidae,Orthopristis chrysoptera,"(Linnaeus, 1766)",46.00 SL,3.58,"Medium, (tmax=4)",51,LC
+Paralichthyidae,Paralichthys dentatus,"(Linnaeus, 1766)",94.00 TL,4.49,"Medium, (K=0.77-0.84(?); assuming tm>=2; tmax=9)",47,LC
+Paralichthyidae,Paralichthys lethostigma,"Jordan & Gilbert, 1884",83.00 TL,3.48,"Medium, (K=0.21-0.23; tmax=8)",44,NT
+Stromateidae,Peprilus paru,"(Linnaeus, 1758)",30.00 TL,3.99,"High, (Preliminary K or Fecundity.)",17,LC
+Stromateidae,Peprilus triacanthus,"(Peck, 1804)",30.00 TL,3.91,"High, (K=0.8(?); tm=1)",21,Not Evaluated
+Petromyzontidae,Petromyzon marinus,"Linnaeus, 1758",120.00 TL,4.37,"Low, (tmax=11; K 0.16; tm=5-12; Relative Fec = 233)",72,LC
+Sciaenidae,Pogonias cromis,"(Linnaeus, 1766)",170.00 TL,3.38,"Medium, (K=0.17; tm=3-5; tmax=43)",60,LC
+Gadidae,Pollachius virens,"(Linnaeus, 1758)",130.00 TL,4.31,"Medium, (rm=0.55-0.87; K=0.07-0.17; tm=2-10; tmax=25; Fec=220,000)",59,Not Evaluated
+Pomatomidae,Pomatomus saltatrix,"(Linnaeus, 1766)",130.00 TL,4.53,"Medium, (K=0.10-0.2; tm=2; tmax=9; Fec=1 million)",63,VU
+Triglidae,Prionotus carolinus,"(Linnaeus, 1771)",38.00 TL,3.68,"Medium, (K=0.3)",35,LC
+Triglidae,Prionotus evolans,"(Linnaeus, 1766)",45.00 TL,3.72,"Medium, (K=0.29)",36,LC
+Pristidae,Pristis pectinata,"Latham, 1794",760.00 TL,4.5,"Low, (Fec=15)",84,CR
+Pleuronectidae,Pseudopleuronectes americanus,"(Walbaum, 1792)",64.00 TL,3.62,"Medium, (K=0.11-0.7(?); tm=2-3; tmax=10)",34,Not Evaluated
+Rachycentridae,Rachycentron canadum,"(Linnaeus, 1766)",200.00 TL,3.83,"Low, (K=0.09-0.22; tm=2-3; tmax=15)",44,LC
+Rajidae,Raja eglanteria,"Bosc, 1800",84.00 TL,3.88,"Low, (K=0.20; Fec assumed to be <100)",51,LC
+Myliobatidae,Rhinoptera bonasus,"(Mitchill, 1815)",213.30 WD,3.55,"Low, (Fec assumed to be <100)",63,NT
+Carcharhinidae,Rhizoprionodon terraenovae,"(Richardson, 1836)",110.00 TL,4.37,"Very low, (K=0.19-0.45(?); tmax=10; tm=4; Fec 1-7)",46,LC
+Scombridae,Sarda sarda,"(Bloch, 1793)",91.40 FL,4.23,"Medium, (K=0.13-0.24; tm=1; tmax=5)",33,LC
+Sciaenidae,Sciaenops ocellatus,"(Linnaeus, 1766)",155.00 TL,3.74,"Medium, (K=0.27; tmax=7; Fec~1 million)",43,LC
+Scombridae,Scomber colias,"Gmelin, 1789",0,3.91,"Medium, (Preliminary K or Fecundity.)",49,LC
+Scombridae,Scomber scombrus,"Linnaeus, 1758",60.00 FL,3.63,"Medium, (rm=0.33-0.56; K=0.23-0.27; tm=2-3; tmax=17; Fec=200,000)",44,LC
+Scombridae,Scomberomorus cavalla,"(Cuvier, 1829)",184.00 TL,4.42,"Low, (K=0.07-0.15; tm=2; tmax=14; Fec=70,000)",58,LC
+Scombridae,Scomberomorus maculatus,"(Mitchill, 1815)",91.00 FL,4.53,"Medium, (K=0.2-0.38; tm=2-3; Fec=280,000)",39,LC
+Scophthalmidae,Scophthalmus aquosus,"(Mitchill, 1815)",45.70 TL,3.72,"Medium, (K=0.24)",43,Not Evaluated
+Carangidae,Selar crumenophthalmus,"(Bloch, 1793)",70.00 TL,3.81,"High, (K=0.6-0.9)",39,LC
+Carangidae,Selene setapinnis,"(Mitchill, 1815)",60.00 TL,3.72,"Medium, (tmax=4.5; assuming tm=2-3)",27,LC
+Carangidae,Selene vomer,"(Linnaeus, 1758)",48.30 TL,4.29,"Medium, (Preliminary K or Fecundity.)",31,LC
+Carangidae,Seriola dumerili,"(Risso, 1810)",190.00 TL,4.66,"Medium, (K=0.18; tm=4; tmax=15)",54,LC
+Carangidae,Seriola rivoliana,"Valenciennes, 1833",160.00 FL,4.45,"Low, (Preliminary K or Fecundity.)",74,LC
+Carangidae,Seriola zonata,"(Mitchill, 1815)",75.00 TL,4.47,"Medium, (Preliminary K or Fecundity.)",42,LC
+Tetraodontidae,Sphoeroides maculatus,"(Bloch & Schneider, 1801)",36.00 TL,4.04,"High, (K=0.6)",24,LC
+Sphyraenidae,Sphyraena borealis,"DeKay, 1842",46.00 TL,4.07,"Medium, (Preliminary K or Fecundity.)",33,LC
+Sphyraenidae,Sphyraena guachancho,"Cuvier, 1829",200.00 TL,4.35,"Very low, (Preliminary K or Fecundity.)",79,LC
+Sphyrnidae,Sphyrna lewini,"(Griffith & Smith, 1834)",430.00 TL,4.08,"Very low, (rm=0.028; K=0.1; tm=3-15; tmax=41.6; Fec=13-23)",81,EN
+Sphyrnidae,Sphyrna tiburo,"(Linnaeus, 1758)",150.00 TL,4,"Very low, (K=0.17-0.34; tm=3; tmax=12; Fec=3)",50,LC
+Sphyrnidae,Sphyrna zygaena,"(Linnaeus, 1758)",500.00 TL,4.94,"Low, (tmax=21; tm=8.8; Fec=20-50)",85,VU
+Squalidae,Squalus acanthias,"Linnaeus, 1758",160.00 TL,4.37,"Very low, (rm=0.034; K=0.03-0.07; tm=10-30; tmax=75; Fec=1)",68,VU
+Squatinidae,Squatina dumeril,"Lesueur, 1818",152.00 TL,4.49,"Low, (Fec assumed to be <100)",71,Data Deficient
+Sciaenidae,Stellifer lanceolatus,"(Holbrook, 1855)",20.00 TL,3.5,"High, (tm=1)",17,LC
+Sparidae,Stenotomus chrysops,"(Linnaeus, 1766)",46.00 TL,3.82,"Medium, (K=0.17-0.23; tmax=19)",38,NT
+Monacanthidae,Stephanolepis hispidus,"(Linnaeus, 1766)",27.50 TL,2.56,"High, (K=0.37;)",30,LC
+Belonidae,Strongylura marina,"(Walbaum, 1792)",111.00 TL,3,"Low, (Preliminary K or Fecundity.)",58,LC
+Cynoglossidae,Symphurus plagiusa,"(Linnaeus, 1766)",21.00 TL,3.2,"Medium, (tmax=5)",32,LC
+Syngnathidae,Syngnathus fuscus,"Storer, 1839",33.00 TL,3.34,"High, (Preliminary K or Fecundity.)",25,LC
+Syngnathidae,Syngnathus louisianae,"Gther, 1870",38.00 TL,3.35,"High, (Preliminary K or Fecundity.)",26,Data Deficient
+Synodontidae,Synodus foetens,"(Linnaeus, 1766)",48.30 FL,4.46,"Medium, (Preliminary K or Fecundity.)",38,LC
+Labridae,Tautoga onitis,"(Linnaeus, 1758)",91.00 TL,3.32,"Low, (K=0.09; tm=2-3; tmax=34)",69,VU
+Labridae,Tautogolabrus adspersus,"(Walbaum, 1792)",38.00 TL,3.72,"Medium, (K=0.15-0.22; tmax=6)",43,LC
+Carangidae,Trachinotus carolinus,"(Linnaeus, 1766)",64.00 TL,3.5,"Medium, (Assuming tm=2-4)",37,LC
+Carangidae,Trachinotus falcatus,"(Linnaeus, 1758)",122.00 FL,3.98,"Medium, (tm=3; tmax=23)",42,LC
+Carangidae,Trachinotus goodei,"Jordan & Evermann, 1896",50.00 TL,4.34,"Medium, (Assuming tm=2-4)",32,LC
+Carangidae,Trachurus lathami,"Nichols, 1920",40.00 TL,3.99,"Medium, (K=0.16; tm=2)",37,LC
+Trichiuridae,Trichiurus lepturus,"Linnaeus, 1758",234.00 TL,4.42,"Low, (K=0.25-0.29; tm=2-3.7; tmax=15; Fec=21,672)",57,LC
+Achiridae,Trinectes maculatus,"(Bloch & Schneider, 1801)",20.00 TL,3.39,"Medium, (tm=1; tmax=7; K=0.21(?))",37,LC
+Belonidae,Tylosurus crocodilus,"(P_ron & Lesueur, 1821)",150.00 TL,4.43,"Low, (Preliminary K or Fecundity.)",69,LC
+Sciaenidae,Umbrina coroides,"Cuvier, 1830",35.00 TL,3.1,"Medium, (Preliminary K or Fecundity.)",32,LC
+Phycidae,Urophycis chuss,"(Walbaum, 1792)",66.00 TL,3.72,"Medium, (K=0.19; tm=2-3)",51,Not Evaluated
+Phycidae,Urophycis regia,"(Walbaum, 1792)",41.00 TL,3.91,"Medium, (Preliminary K or Fecundity.)",38,LC

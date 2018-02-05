@@ -92,7 +92,8 @@ WAHostsandParasites$H_SP[WAHostsandParasites$M==0]
 #########################################################################################
 #Parasite spp richness histogram
 SppRichness<-WAHostsandParasites %>% group_by(H_SP) %>% summarize(SppRichness = n())
-hist(SppRichness$SppRichness)
+par(mar=c(4,4,0.5,0.5))
+hist(SppRichness$SppRichness, main=NA, xlab="Number of parasite spp")
 hist(table(WAHostsandParasites$H_SP)) #k - dplyr was slower
 
 #Make a dataframe w/ host spp as row/observation, spp richness as tally,
@@ -215,17 +216,17 @@ MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$GEO=="NEA",]
 
 length(MAHostsandParasites$UniqueHspPsp)
 length(unique(MAHostsandParasites$UniqueHspPsp))
-View(MAHostsandParasites)
+#View(MAHostsandParasites)
 
 #Let's check for duplicates - first, some that aren't EXACT duplicates
 #There is Caballeronema pseudoargmentosus and Caballeronema pseudoargumentatus,
 #let's go with the latter, from NHM, citation Caballeronema pseudoargumentatus Appy & Dadswell, 1978   
-View(MAHostsandParasites[MAHostsandParasites$P_SP=="Caballeronema pseudoargmentosus"|MAHostsandParasites$P_SP=="Caballeronema pseudoargumentatus",])
+#View(MAHostsandParasites[MAHostsandParasites$P_SP=="Caballeronema pseudoargmentosus"|MAHostsandParasites$P_SP=="Caballeronema pseudoargumentatus",])
 MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$P_SP!="Caballeronema pseudoargmentosus",]
 
 #There is both (Ariopsis felis) Pseudacanthostomum panamense and Pseudoacanthostomum panamense
 #which I think are the same? So let's only keep pseudo for now
-View(MAHostsandParasites[MAHostsandParasites$P_SP=="Pseudacanthostomum panamense"|MAHostsandParasites$P_SP=="Pseudoacanthostomum panamense",])
+#View(MAHostsandParasites[MAHostsandParasites$P_SP=="Pseudacanthostomum panamense"|MAHostsandParasites$P_SP=="Pseudoacanthostomum panamense",])
 MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$P_SP!="Pseudacanthostomum panamense",]
 
 #Now exact duplicates - mostly in Alosa pseudoharengus. As far as I can tell,
@@ -237,8 +238,8 @@ MAHostsandParasites<-MAHostsandParasites[MAHostsandParasites$P_SP!="Pseudacantho
 #icropogonias undulatus Leptorhynchoides thecatus
 #Paralichthys dentatus Southwellina hispida
 
-View(MAHostsandParasites[MAHostsandParasites$UniqueHspPsp=="Alosa pseudoharengus Acanthocephalus dirus ",])
-View(Strona[Strona$P_SP=="Acanthocephalus dirus" & Strona$H_SP=="Alosa pseudoharengus",])
+#View(MAHostsandParasites[MAHostsandParasites$UniqueHspPsp=="Alosa pseudoharengus Acanthocephalus dirus ",])
+#View(Strona[Strona$P_SP=="Acanthocephalus dirus" & Strona$H_SP=="Alosa pseudoharengus",])
 
 MAHostsandParasites<-MAHostsandParasites[!duplicated(MAHostsandParasites$UniqueHspPsp),]
 
@@ -308,5 +309,95 @@ unique(AbundData$scientificName)
 #Pull out things in the FishBase list for MA
 #Not all of them are present - because they're nearshore fish?
 AbundData<-subset(AbundData, AbundData$scientificName %in% FishSpp$LatinName)
-unique(AbundData$scientificName)
+sort(unique(AbundData$scientificName))
 unique(FishSpp$LatinName)
+
+#Pull the year into a separate column
+#Formating is consistent, so just need first 4 characters
+unique(AbundData$eventDate)
+AbundData$Year<-as.numeric(substr(AbundData$eventDate, 1, 4))
+
+#From 1965-1970, there are many fewer observed spp. So exclude for now
+hist(AbundData$Year, breaks=20, xlim=c(1960, 2018))
+AbundData<-AbundData[AbundData$Year > 1969,]
+
+#Plot how host spp richness changes per yr
+#1970 and 1971 had lower richness, but maybe OK?
+Year<-seq(min(AbundData$Year), max(AbundData$Year), by=1)
+HostRichness<-NULL
+for(i in 1:length(Year)){
+  HostRichness[i]<-length(unique(AbundData$scientificName[AbundData$Year==Year[i]]))
+}
+plot(HostRichness~Year)
+
+#Plot abundance over time, color by host spp 
+#this is just messy
+plot(AbundData$individualCount~AbundData$Year, col=as.factor(AbundData$scientificName))
+
+#plotted first 12 unique spp by hand. glm.nb temporal trends matched
+#visual plots well, so let's automate that process
+l<-54
+plot(AbundData$individualCount[AbundData$scientificName==unique(AbundData$scientificName)[l]]~AbundData$Year[AbundData$scientificName==unique(AbundData$scientificName)[l]])
+#library(MASS)
+test<-glm.nb(AbundData$individualCount[AbundData$scientificName==unique(AbundData$scientificName)[l]]~AbundData$Year[AbundData$scientificName==unique(AbundData$scientificName)[l]]); summary(test)
+test$coefficients[2]; summary(test)$coefficients[2,4]
+c("up", "down", "same", "down", "down", "same", "same", "up", "same", "down", "same", "same")
+ifelse(summary(test)$coefficients[2,4]>0.5, print("same"), ifelse(test$coefficients[2] > 0, print("positive"), print("negative")))
+
+#first 12 match OK
+PopTrend<-NULL
+for(i in 1:12) {
+  test<-glm.nb(AbundData$individualCount[AbundData$scientificName==unique(AbundData$scientificName)[i]]~AbundData$Year[AbundData$scientificName==unique(AbundData$scientificName)[i]])
+  ifelse(summary(test)$coefficients[2,4]>0.5, PopTrend[i]<-"same", ifelse(test$coefficients[2] > 0, PopTrend[i]<-"positive", PopTrend[i]<-"negative"))
+}
+
+#Some fish have very few observations, so we can't model them
+unique(AbundData$scientificName)[60:72]
+AbundData$individualCount[AbundData$scientificName==unique(AbundData$scientificName)[60]]
+
+PopTrend<-rep(NA, length(unique(AbundData$scientificName)))
+for(i in c(1:50,54)) {
+  test<-glm.nb(AbundData$individualCount[AbundData$scientificName==unique(AbundData$scientificName)[i]]~AbundData$Year[AbundData$scientificName==unique(AbundData$scientificName)[i]])
+  ifelse(summary(test)$coefficients[2,4]>0.5, PopTrend[i]<-"same", ifelse(test$coefficients[2] > 0, PopTrend[i]<-"positive", PopTrend[i]<-"negative"))
+}
+
+table(PopTrend)
+
+TrendsData<-(cbind(LatinName=unique(AbundData$scientificName), PopTrend=PopTrend))
+
+#Let's add parasite spp richness to that
+head(SppRichness)
+ParasiteRichness<-rep(NA, length(TrendsData[,1]))
+for(i in 1:length(TrendsData[,1])) {
+  X<-SppRichness$H_SP[SppRichness$H_SP==TrendsData[i,1]]
+  ifelse(length(SppRichness$ParasiteRichness[SppRichness$H_SP==TrendsData[i,1]]), ParasiteRichness[i]<-SppRichness$ParasiteRichness[SppRichness$H_SP==TrendsData[i,1]], ParasiteRichness[i]<-NA)
+}
+
+library(lattice)
+xyplot(ParasiteRichness~as.factor(PopTrend))
+
+#Let's get max densities, to look at "historical" abundance
+Max70s<-rep(NA, length(unique(AbundData$scientificName)))
+for(i in c(1:72)) {
+  Max70s[i]<-max(AbundData$individualCount[AbundData$Year < 1980 & AbundData$scientificName==unique(AbundData$scientificName)[i]])
+}
+Max70s[Max70s==-Inf]<-NA
+hist(Max70s, breaks=200)
+
+#Not sure what a good abundance cut off is. Let's say maxn<10 ind is rare
+AbundYN<-rep(0, length(Max70s)); AbundYN[Max70s>9]<-1
+
+#Plot all that
+par(mar=c(3,4,0.5,0.5))
+col<-rep(rgb(0,0,0, alpha=0.5), length(PopTrend)); col[PopTrend=="positive"]<-rgb(0/255, 255/255, 0/255, alpha=0.5); col[PopTrend=="negative"]<-rgb(255/255, 0/255, 0/255, alpha=0.5); col[is.na(PopTrend)]<-rgb(255/255, 255/255, 255/255, alpha=0.8)
+plot(ParasiteRichness~jitter(AbundYN, 0.5), pch=21, bg=col, xlab="Abundant host spp YN", ylab="Parasite spp richness", xlim=c(-0.5, 1.5), xaxt="n")
+mtext(text = c("No", "Yes"), at=c(0, 1), side = 1, line = 0.1)
+mtext(text = "Host spp was abundant in 70s?", side = 1, line = 1.5)
+legend("topleft", bty="n", legend = c("Increasing", "Decreasing", "Stable", "NA"), pt.bg=c(rgb(0/255, 255/255, 0/255, alpha=0.5), rgb(255/255, 0/255, 0/255, alpha=0.5), rgb(0,0,0, alpha=0.5),rgb(255/255, 255/255, 255/255, alpha=0.8)), pch=c(21,21,21,21))
+
+length(ParasiteRichness)-sum(is.na(ParasiteRichness))
+
+
+
+
+
