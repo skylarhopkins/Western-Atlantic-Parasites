@@ -21,8 +21,10 @@ library(dplyr)
 library(tidyr)
 library(readr)
 
+library(lattice)
 library(MASS)
 
+library(rvertnet)
 #########################################################################################
 #################Create a list of western Atlantic fish spp##################################
 #########################################################################################
@@ -30,7 +32,7 @@ library(MASS)
 #I already removed the freshwater species
 FishSpp <- read_csv("~/Documents/Western Atlantic Parasites/ChesapeakeFishResilience.csv")
 head(FishSpp)
-length(FishSpp$LatinName) #186 spp
+length(FishSpp$LatinName) #174 spp
 
 #separate genus and species for use later
 #We get an error for cases with subspecies, because they have three words in the latin
@@ -62,6 +64,8 @@ xyplot(FishSpp$IntrinsicVulnerability~jitter(as.numeric(as.factor(FishSpp$IUCN))
 #find them on the web
 Temp<-species(FishSpp$LatinName, fields=c("Vulnerability", "Fresh", "Brack", "Saltwater"))
 FishSpp<-(merge(FishSpp, Temp, by.x="LatinName", by.y="sciname", all.x=TRUE))
+View(FishSpp)
+
 plot(FishSpp$IntrinsicVulnerability~FishSpp$Vulnerability)
 
 #I'm not sure why, but FishBase put some (35) freshwater spp in the list
@@ -135,15 +139,6 @@ length(unique(HostsandParasites$UniqueHspPsp)) #733 unique host-parasite links
 #is counted as two, due to one misspecified genus. Should fix later.
 
 #########################################################################################
-####Missing host spp in database####################################################
-#########################################################################################
-#Not all of the MA host spp from the FishBase list had parasites in the Strona database
-length(unique(FishSpp$LatinName))
-length(unique(HostsandParasites$H_SP)) #only 84/174 of the fish spp are in the Strona database
-MissingHosts<-FishSpp$LatinName[!(FishSpp$LatinName %in% HostsandParasites$H_SP)] #list of missing host spp
-MissingHosts #90 missing 
-
-#########################################################################################
 ###################Describe parasite diversity#####################################
 #########################################################################################
 #Make a dataset w/ each parasite spp listed just once (ignore host info)
@@ -166,6 +161,7 @@ SppRichness$ParasiteRichness<-aggregate(HostsandParasites$P_SP, by = list(Hostsa
 hist(SppRichness$ParasiteRichness, breaks = 40)
 min(SppRichness$ParasiteRichness); mean(SppRichness$ParasiteRichness); max(SppRichness$ParasiteRichness)
 #1; 8.72619; 55
+names(sort(-table(SppRichness$ParasiteRichness)))[1] #mode = 1
 SppRichness[SppRichness$ParasiteRichness==55,]
 
 Temp<-species(SppRichness$H_SP, fields=c("Vulnerability"))
@@ -188,10 +184,10 @@ plot(residuals(test)~log(SppRichness$MaxL))
 SppRichness$K<-as.numeric(SppRichness$K)
 plot(SppRichness$ParasiteRichness~SppRichness$K)
 hist(SppRichness$K)
-hist(log(SppRichness$K))
-plot(SppRichness$ParasiteRichness~log(SppRichness$K))
-test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$K)); summary(test)
-FakeK<-log(seq(0.0001, max(SppRichness$K, na.rm=T), 0.1)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeK)
+hist(log(SppRichness$K+1))
+plot(SppRichness$ParasiteRichness~log(SppRichness$K+1))
+test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$K+1)); summary(test) #SIG
+FakeK<-log(seq(0.0001, max(SppRichness$K, na.rm=T), 0.1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeK)
 lines(PredRich~FakeK, lwd=2, col="red")
 plot(residuals(test))
 
@@ -200,7 +196,7 @@ hist(SppRichness$Y)
 hist(log(SppRichness$Y+1))
 plot(SppRichness$ParasiteRichness~log(SppRichness$Y+1))
 test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$Y+1)); summary(test)
-FakeY<-log(seq(0.0001, max(SppRichness$Y, na.rm=T), 1)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeY)
+FakeY<-log(seq(0.0001, max(SppRichness$Y, na.rm=T), 1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeY)
 lines(PredRich~FakeY, lwd=2, col="red")
 plot(residuals(test))
 
@@ -209,7 +205,7 @@ hist(SppRichness$Ym)
 hist(log(SppRichness$Y+1))
 plot(SppRichness$ParasiteRichness~log(SppRichness$Ym+1))
 test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$Ym+1)); summary(test)
-FakeYm<-log(seq(0.0001, max(SppRichness$Ym, na.rm=T), 0.1)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeYm)
+FakeYm<-log(seq(0.0001, max(SppRichness$Ym, na.rm=T), 0.1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeYm)
 lines(PredRich~FakeYm, lwd=2, col="red")
 plot(residuals(test))
 
@@ -227,8 +223,8 @@ plot(SppRichness$ParasiteRichness~SppRichness$AOO)
 hist(SppRichness$AOO)
 hist(log(SppRichness$AOO+1))
 plot(SppRichness$ParasiteRichness~log(SppRichness$AOO+1)) #maybe a bit better
-test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$AOO+1)); summary(test)
-FakeAOO<-log(seq(0, max(SppRichness$AOO, na.rm=T), 10)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeAOO)
+test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$AOO+1)); summary(test) #MARG
+FakeAOO<-log(seq(0, max(SppRichness$AOO, na.rm=T), 10)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeAOO)
 lines(PredRich~FakeAOO, lwd=2, col="red")
 plot(residuals(test))
 
@@ -241,16 +237,244 @@ plot(residuals(test))
 
 ?matplot
 pairs(SppRichness[c(10:14, 18, 23)])
-#K and Y and Y and Ym super correlated - still w/ Y
+#K and Y and Y and Ym super correlated - keep K
+plot(log(SppRichness$K+1)~SppRichness$Vulnerability)
 names(SppRichness)
-pairs(SppRichness[c(10, 13:14, 18, 23)])
-#MaxL and Ym w/ vulnerability, of course. So let's go w/ trophic level and vulnerability
+pairs(SppRichness[c(11, 14, 18, 23)])
+#K w/ vulnerability, of course. So let's go w/ trophic level and K
 #AOO might be correlated w/ those, but we'll check it w/ VIFs
-pairs(SppRichness[c(14, 18, 23)])
+pairs(SppRichness[c(11, 14, 18)])
 plot(log(SppRichness$AOO+1)~SppRichness$T)
-plot(log(SppRichness$AOO+1)~SppRichness$Vulnerability)
+plot(log(SppRichness$AOO+1)~log(SppRichness$K+1))
 
 #Multiple regression model
-test<-glm.nb(SppRichness$ParasiteRichness~SppRichness$Vulnerability + SppRichness$T + log(SppRichness$AOO+1)); summary(test)
+test<-glm.nb(SppRichness$ParasiteRichness~log(SppRichness$K+1) + SppRichness$T + log(SppRichness$AOO+1)); summary(test)
 plot(residuals(test))
 
+#########################################################################################
+###################Number of unique psite spp per host spp##########################
+#########################################################################################
+UniqueParasites<-sort(unique(HostsandParasites$P_SP)) #440 unique parasites
+ParasiteGeneralism<-as.data.frame(table(HostsandParasites$P_SP))
+hist(ParasiteGeneralism[,2], breaks=30) #WOW. Most from just one host spp!!!!
+max(ParasiteGeneralism[,2]) #shared by up to 14 host spp
+SpecialistYN<-rep(1, length(ParasiteGeneralism[,2])); SpecialistYN[ParasiteGeneralism[,2] > 1]<-0 
+table(SpecialistYN) #only 95 parasites are shared among two or more hosts
+
+#Count number of unique psites per host
+#this is clunky...but it works
+HostsandParasites$SpecialistYN<-NA
+for(i in 1:length(SpecialistYN)) {
+  HostsandParasites$SpecialistYN[HostsandParasites$P_SP==ParasiteGeneralism[i,1]]<-SpecialistYN[i]
+}
+tail(table(HostsandParasites$P_SP, HostsandParasites$SpecialistYN))
+tail(ParasiteGeneralism) #ok
+
+SppRichness$NumUniquePsites<-aggregate(HostsandParasites$SpecialistYN, by=list(HostsandParasites$H_SP), FUN=sum)[,2]
+hist(SppRichness$NumUniquePsites, breaks=30)
+SppRichness$H_SP[SppRichness$NumUniquePsites==29]
+min(SppRichness$NumUniquePsites); mean(SppRichness$NumUniquePsites); max(SppRichness$NumUniquePsites)
+#0; 4.107143; 29
+names(sort(-table(SppRichness$NumUniquePsites)))[1] #mode = 2
+
+#Look at potential host characteristic correlates of specialist richness
+#First look at each individually, then use multiple regression w/ uncorrelated
+plot(SppRichness$NumUniquePsites~SppRichness$MaxL)
+hist(SppRichness$MaxL)
+hist(log(SppRichness$MaxL)) #actually that looks good without removing HIP
+plot(SppRichness$NumUniquePsites~log(SppRichness$MaxL))
+#marginal
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$MaxL)); summary(test)
+FakeMaxL<-log(seq(1, max(SppRichness$MaxL), 1)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeMaxL)
+lines(PredRich~FakeMaxL, lwd=2, col="red")
+lines(lowess(SppRichness$NumUniquePsites~log(SppRichness$MaxL)))
+plot(residuals(test))
+plot(residuals(test)~log(SppRichness$MaxL))
+
+SppRichness$K<-as.numeric(SppRichness$K)
+plot(SppRichness$NumUniquePsites~SppRichness$K)
+hist(SppRichness$K)
+hist(log(SppRichness$K+1))
+plot(SppRichness$NumUniquePsites~log(SppRichness$K+1))
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$K+1)); summary(test) #SIG
+#coef for log(SppRichness$K+1) is -1.4098
+FakeK<-log(seq(0.0001, max(SppRichness$K, na.rm=T), 0.1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeK)
+lines(PredRich~FakeK, lwd=2, col="red")
+plot(residuals(test))
+
+plot(SppRichness$NumUniquePsites~SppRichness$Y)
+hist(SppRichness$Y)
+hist(log(SppRichness$Y+1))
+plot(SppRichness$NumUniquePsites~log(SppRichness$Y+1))
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$Y+1)); summary(test)
+FakeY<-log(seq(0.0001, max(SppRichness$Y, na.rm=T), 1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeY)
+lines(PredRich~FakeY, lwd=2, col="red")
+plot(residuals(test))
+
+plot(SppRichness$NumUniquePsites~SppRichness$Ym)
+hist(SppRichness$Ym)
+hist(log(SppRichness$Y+1))
+plot(SppRichness$NumUniquePsites~log(SppRichness$Ym+1))
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$Ym+1)); summary(test)
+FakeYm<-log(seq(0.0001, max(SppRichness$Ym, na.rm=T), 0.1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeYm)
+lines(PredRich~FakeYm, lwd=2, col="red")
+plot(residuals(test))
+
+SppRichness$T<-as.numeric(SppRichness$T)
+plot(SppRichness$NumUniquePsites~SppRichness$T)
+hist(SppRichness$T)
+test<-glm.nb(SppRichness$NumUniquePsites~SppRichness$T); summary(test)
+plot(SppRichness$NumUniquePsites~SppRichness$T)
+FakeT<-(seq(0.0001, max(SppRichness$T, na.rm=T), 0.1)); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeT)
+lines(PredRich~FakeT, lwd=2, col="red")
+plot(residuals(test))
+
+SppRichness$AOO<-as.numeric(SppRichness$AOO)
+plot(SppRichness$NumUniquePsites~SppRichness$AOO)
+hist(SppRichness$AOO)
+hist(log(SppRichness$AOO+1))
+plot(SppRichness$NumUniquePsites~log(SppRichness$AOO+1)) #maybe a bit better
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$AOO+1)); summary(test)
+FakeAOO<-log(seq(0, max(SppRichness$AOO, na.rm=T), 10)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeAOO)
+lines(PredRich~FakeAOO, lwd=2, col="red")
+plot(residuals(test))
+
+hist(SppRichness$Vulnerability)
+test<-glm.nb(SppRichness$NumUniquePsites~SppRichness$Vulnerability); summary(test)
+plot(SppRichness$NumUniquePsites~SppRichness$Vulnerability)
+FakeVul<-seq(0, 100, 1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeVul)
+lines(PredRich~FakeVul, lwd=2, col="red")
+plot(residuals(test)) #marg
+
+#Multiple regression model
+test<-glm.nb(SppRichness$NumUniquePsites~log(SppRichness$K+1) + SppRichness$T + log(SppRichness$AOO+1)); summary(test)
+#coef for log(SppRichness$K+1) is -1.8275
+plot(SppRichness$NumUniquePsites~log(SppRichness$K+1))
+FakeK<-log(seq(0.0001, max(SppRichness$K, na.rm=T), 0.1)+1); PredRich<-exp(test$coefficients[1]+test$coefficients[2]*FakeK+test$coefficients[3]*mean(SppRichness$T, na.rm=T)+test$coefficients[4]*mean(log(SppRichness$AOO + 1), na.rm=T))
+lines(PredRich~FakeK, lwd=2, col="red")
+plot(residuals(test))
+#library(car)
+vif(test)
+
+#########################################################################################
+####Missing host spp in database####################################################
+#########################################################################################
+#Not all of the MA host spp from the FishBase list had parasites in the Strona database
+length(unique(FishSpp$LatinName)) #174
+length(unique(HostsandParasites$H_SP)) #only 84/174 of the fish spp are in the Strona database
+MissingHosts<-FishSpp$LatinName[!(FishSpp$LatinName %in% HostsandParasites$H_SP)] #list of missing host spp
+MissingHosts #90 missing 
+
+FishSpp$MissingYN<-1; FishSpp$MissingYN[(FishSpp$LatinName %in% HostsandParasites$H_SP)]<-0
+table(FishSpp$MissingYN)
+
+table(FishSpp$IUCN, FishSpp$MissingYN, useNA = "ifany")
+FishSpp$LCYN<-0; FishSpp$LCYN[FishSpp$IUCN=="LC"]<-1
+xyplot(jitter(FishSpp$MissingYN)~as.factor(FishSpp$IUCN))
+table(FishSpp$MissingYN, FishSpp$LCYN)
+test<-glm(FishSpp$MissingYN~FishSpp$LCYN, family="binomial"); summary(test)
+
+table(FishSpp$CurrentPopTrend[FishSpp$MissingYN==1], FishSpp$IUCN[FishSpp$MissingYN==1])
+FishSpp$RiskyMissingHostsYN<-0; FishSpp$RiskyMissingHostsYN[FishSpp$MissingYN==1 & FishSpp$IUCN!="LC" & FishSpp$IUCN!="Not Evaluated"]<-1
+
+#There doesn't seem to be any rhyme or reason to why host spp are missing
+plot(FishSpp$MissingYN~FishSpp$TrophicLevel)
+plot(FishSpp$MissingYN~FishSpp$IntrinsicVulnerability)
+plot(FishSpp$MissingYN~FishSpp$K)
+test<-glm(FishSpp$MissingYN~FishSpp$K, family="binomial"); summary(test)
+FishSpp$Lengthcm
+FishSpp$LengthNumeric<-as.numeric(sapply(strsplit(FishSpp$Lengthcm, " "), "[", 1))
+hist(log(FishSpp$LengthNumeric+1))
+plot(FishSpp$MissingYN~log(FishSpp$LengthNumeric+1))
+
+##########################################################################
+############Predict Num of Missing Parasite Spp###########################
+##########################################################################
+FishSpp$LatinName[FishSpp$RiskyMissingHostsYN==1]
+
+#These aren't a perfect match, and I don't know why. Database changes?
+plot(FishSpp$K[FishSpp$MissingYN==0]~SppRichness$K)
+
+#Make sure trends (lack thereof) look same w/ 0s included
+plot(FishSpp$SpecialistRichness~log(FishSpp$LengthNumeric+1))
+plot(FishSpp$SpecialistRichness~FishSpp$TrophicLevel)
+plot(FishSpp$SpecialistRichness~FishSpp$IntrinsicVulnerability)
+plot(FishSpp$SpecialistRichness~log(FishSpp$K+1))
+xyplot(jitter(FishSpp$SpecialistRichness)~as.factor(FishSpp$CurrentPopTrend))
+xyplot(jitter(FishSpp$SpecialistRichness)~as.factor(FishSpp$IUCN))
+
+FishSpp$SpecialistRichness<-rep(0, length(FishSpp$LatinName))
+for(i in 1:length(FishSpp$LatinName[FishSpp$MissingYN==0])) {
+  FishSpp$SpecialistRichness[FishSpp$MissingYN==0][i]<-SppRichness$NumUniquePsites[FishSpp$LatinName[FishSpp$MissingYN==0][i]==SppRichness$H_SP]
+}
+plot(FishSpp$SpecialistRichness[FishSpp$MissingYN==0]~SppRichness$NumUniquePsites)
+
+#Pred based on model for specialist/unique psite spp that have some psites
+test<-glm.nb(FishSpp$SpecialistRichness[FishSpp$MissingYN==0]~log(FishSpp$K[FishSpp$MissingYN==0]+1)); summary(test)
+plot(SppRichness$NumUniquePsites~log(SppRichness$K+1))
+pred<-exp(test$coefficients[1]+test$coefficients[2]*log(seq(0, 2, 0.1)+1))
+lines(pred~log(seq(0, 2, 0.1)+1))
+points(FishSpp$SpecialistRichness[FishSpp$RiskyMissingHostsYN==1]~FishSpp$K[FishSpp$RiskyMissingHostsYN==1], col="red")
+
+PredSpecialists<-exp(test$coefficients[1]+test$coefficients[2]*log(FishSpp$K+1))
+hist(PredSpecialists)
+plot(PredSpecialists~FishSpp$K, ylim=c(0, 13))
+plot(PredSpecialists~FishSpp$SpecialistRichness, ylim=c(0, 13))
+X<-seq(0, 30, 1)
+lines(1*X~X) #That looks  awful... should be 1:1
+
+plot(SppRichness$NumUniquePsites~log(SppRichness$K+1))
+abline(h=mean(SppRichness$NumUniquePsites))
+points(FishSpp$SpecialistRichness[FishSpp$RiskyMissingHostsYN==1]~FishSpp$K[FishSpp$RiskyMissingHostsYN==1], col="red")
+length(which(FishSpp$RiskyMissingHostsYN==1))*mean(SppRichness$NumUniquePsites)
+
+##########################################################################
+##Specimens that could be dissected, as counted on VertNet################
+##########################################################################
+#You can only do up to 1000 records per search w/out emailing big lists
+#So it's easier to pull from the Web
+searchbyterm(FishSpp$LatinName[1])
+CBayVertSearch<-vertsearch(taxon = NULL, "Chesapeake Bay", compact = TRUE)
+
+#already deleted rows for mammals, birds, reptiles, fossil otoliths
+#genus only entries, and dry specimens
+ChesapeakeBayVertNet <- read_delim("~/Documents/Western Atlantic Parasites/ChesapeakeBayVertNet.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
+
+#Individualcount says how many ind per jar/container/tank/lot/etc
+table(ChesapeakeBayVertNet$individualcount, useNA = "ifany")
+#141 NAs. Let's conservatively say NA=1
+ChesapeakeBayVertNet$individualcount[is.na(ChesapeakeBayVertNet$individualcount)]<-1
+table(ChesapeakeBayVertNet$individualcount, useNA = "ifany")
+
+#8 records have individualcount=0, because they're missing. Remove them
+View(ChesapeakeBayVertNet[ChesapeakeBayVertNet$individualcount==0,])
+ChesapeakeBayVertNet<-ChesapeakeBayVertNet[ChesapeakeBayVertNet$individualcount>0,]
+names(ChesapeakeBayVertNet)
+
+table(ChesapeakeBayVertNet$institutioncode)
+tail(sort(ChesapeakeBayVertNet$year), 100)
+
+#Sum number of specimens per host spp
+unique(ChesapeakeBayVertNet$scientificname) #287 spp
+MuseumCounts<-aggregate(ChesapeakeBayVertNet$individualcount, by=list(ChesapeakeBayVertNet$scientificname), FUN=sum)
+names(MuseumCounts)<-c("LatinName", "Count")
+
+FishSpp$SpecimenCounts<-NA
+for(i in 1:length(FishSpp$SpecimenCounts)) {
+  Count<-MuseumCounts$Count[MuseumCounts$LatinName==FishSpp$LatinName[i]]
+  ifelse(length(Count), FishSpp$SpecimenCounts[i]<-Count, FishSpp$SpecimenCounts[i]<-0)
+}
+
+hist(FishSpp$SpecimenCounts, breaks=40)
+hist(FishSpp$SpecimenCounts[FishSpp$SpecimenCounts > 2], breaks=40)
+FishSpp[FishSpp$SpecimenCounts>3000,]
+
+hist(FishSpp$TrophicLevel)
+plot(FishSpp$SpecimenCounts~FishSpp$TrophicLevel)
+plot(FishSpp$SpecimenCounts~FishSpp$IntrinsicVulnerability)
+xyplot(FishSpp$SpecimenCounts~as.factor(FishSpp$ResilienceCategory))
+xyplot(FishSpp$SpecimenCounts~as.factor(FishSpp$IUCN))
+plot(FishSpp$SpecimenCounts~FishSpp$PhylogeneticDiversityIndex)
+plot(FishSpp$SpecimenCounts~FishSpp$MissingYN)
+sum(FishSpp$SpecimenCounts[FishSpp$MissingYN==1]) #9511
+sum(FishSpp$SpecimenCounts) #23220

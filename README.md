@@ -8,3 +8,5 @@
 1 February 2018 - Started working with population trend data from bottom trawls
 
 4 February 2018 - switched region to Chesapeake Bay. Added GLMs to look for correlates of parasite richness - found none.
+
+13 February 2018 - Finalized analyses for ESA abstract.
