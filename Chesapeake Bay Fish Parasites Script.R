@@ -17,6 +17,7 @@ library(rfishbase) #FishBase
 #devtools::install_github("rOpenSci/helminthR")
 library("helminthR")
 
+library(plyr)
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -25,54 +26,102 @@ library(lattice)
 library(MASS)
 
 library(rvertnet)
+
 #########################################################################################
-#################Create a list of western Atlantic fish spp##################################
+#########Create a list of Chesapeake Bay fish spp using FishBase###########################
 #########################################################################################
-##Import the list of Chesapeake Bay marine fish species that you can from FishBase. 
-#I already removed the freshwater species
-FishSpp <- read_csv("~/Documents/Western Atlantic Parasites/ChesapeakeFishResilience.csv")
-head(FishSpp)
-length(FishSpp$LatinName) #174 spp
+##Import the list of Chesapeake Bay marine fish species that you can get from 
+#the FishBase web interface. I originally used this as my main list, but later
+#I switched to the list in the Field Guide to Fishes of the Chesapeake Bay
+#Note: this Fishbase list doesn't include freshwater species
+FishBaseFishSpp <- read_csv("~/Documents/ParasiteConservationOOS and Project/Western Atlantic Parasites/ChesapeakeFishResilience.csv")
+head(FishBaseFishSpp)
+length(FishBaseFishSpp$LatinName) #174 spp
 
 #separate genus and species for use later
 #We get an error for cases with subspecies, because they have three words in the latin
 #name, but it doesn't affect outcome for this particular spp list
-FishSpp<-separate(data=FishSpp, col=LatinName, into=c("Genus", "species"), sep=" ", remove=F)
-FishSpp<-as.data.frame(FishSpp)
+FishBaseFishSpp<-separate(data=FishBaseFishSpp, col=LatinName, into=c("Genus", "species"), sep=" ", remove=F)
+FishBaseFishSpp<-as.data.frame(FishBaseFishSpp)
 #View(FishSpp)
 
 #Pull resilience category into it's own column
-head(FishSpp$Resilience)
-FishSpp$ResilienceCategory<-sapply(strsplit(FishSpp$Resilience, ","), "[", 1)
+head(FishBaseFishSpp$Resilience)
+FishBaseFishSpp$ResilienceCategory<-sapply(strsplit(FishBaseFishSpp$Resilience, ","), "[", 1)
 
 #########################################################################################
-########################Historical vulnerability##################################
+#########Create a list of Chesapeake Bay fish spp using Field Guide###########################
+#######Data about each spp then compiled from FishBase#######################
 #########################################################################################
+#I wasn't totally confident in the list I generated from Fishbase, so I pulled
+#a new species list from the Field Guide to Fishes of the Chesapeake Bay. The book
+#says it lists 211 species, but I only count 208. I copied everything by hand,
+#so I need to deal with some human errors to start
+FishSpp <- read_csv("~/Documents/ParasiteConservationOOS and Project/Western Atlantic Parasites/Field Guide to Chesapeake Fishes Database.csv")
+head(FishSpp)
+length(FishSpp$Species) #208 spp
+FishSpp<-as.data.frame(FishSpp)
+
+#Make a column that combines the binomial species name
+FishSpp$LatinName<-paste(FishSpp$Genus, FishSpp$Species)
+
+#Check to make sure the names in the Field Guide match those used by
+#FishBase. Warnings tell us that some spp names are misapplied and/or have synonyms
+ValidatedNames<-validate_names(FishSpp$LatinName)
+warnings()
+validate_names("Trachinotus falcatus") #potential issue - 2 options here
+FishSpp$ValidatedLatinName<-ValidatedNames[ValidatedNames!="Trachinotus blochii"]
+
+#Pull lots of fish spp data from FishBase
+dat<-species(FishSpp$ValidatedLatinName, fields=c("FamCode", "Subfamily", "Fresh", "Brack", "Saltwater", "DemersPelag", "DepthRangeShallow", "DepthRangeDeep", "LongevityWild", "Vulnerability", "Length", "CommonLength", "Weight", "Importance", "PriceCateg", "PriceReliability", "LandingStatistics", "Landings", "MainCatchingMethod", "UsedasBait", "Aquarium", "UsedforAquaculture", "GameFish", "Dangerous"))
+FishSpp<-cbind(FishSpp, dat)
+
+#IUCN status is in a different data table. Some species have multiple lines, and we 
+#just take the first instance
+IUCN<-stocks(FishSpp$ValidatedLatinName, fields=c("IUCN_Code"))
+IUCN<-ddply(IUCN,.(sciname),function(x) head(x,1))
+FishSpp<-merge(FishSpp, IUCN, by.x="ValidatedLatinName", by.y="sciname")
+
+list_fields("Trends")
+
+#########################################################################################
+################Explore and Summarize Fish Host Data##################################
+#########################################################################################
+
+#################################Diversity########################################
+length(unique(FishSpp$LatinName)) #208 spp
+length(unique(FishSpp$Genus)) #150 genera
+length(unique(FishSpp$Family)) #85 families
+
+##Only 32 fish spp are year round residents
+sum(FishSpp$YearRoundResidentYN)
+length(unique(FishSpp$LatinName[FishSpp$YearRoundResidentYN==1])) #32 spp
+length(unique(FishSpp$Genus[FishSpp$YearRoundResidentYN==1])) #24 genera
+length(unique(FishSpp$Family[FishSpp$YearRoundResidentYN==1])) #19 families
+
+########################Historical vulnerability##################################
 #"FishBase computes vulnerability values using a fuzzy expert system integrating 
-#biological and ecological characteristics of fish species18. These values of host 
+#biological and ecological characteristics of fish species. These values of host 
 #vulnerability range from 0 (minimum vulnerability) to 100 (maximum vulnerability). 
 #We used these values (divided by 100) as measures of the probabilities of host 
 #species to go extinct." Also see Cheung et al. 2005. Biological Conservation.
+#Roughly speaking, >50 is high to very high vulnerability
+hist(FishSpp$Vulnerability, breaks=30)
+xyplot(FishSpp$Vulnerability~as.factor(FishSpp$IUCN_Code))
+xyplot(FishSpp$Vulnerability~jitter(as.numeric(as.factor(FishSpp$IUCN_Code))))
 
-hist(FishSpp$IntrinsicVulnerability, breaks=30)
-xyplot(FishSpp$IntrinsicVulnerability~as.factor(FishSpp$IUCN))
-#xyplot(FishSpp$IntrinsicVulnerability~as.factor(FishSpp$ResilienceCategory))
-xyplot(FishSpp$IntrinsicVulnerability~jitter(as.numeric(as.factor(FishSpp$IUCN))))
+##########################IUCN status#########################################
+table(FishSpp$IUCN_Code)
+FishSpp$IUCNThreatenedYN<-0; 
+FishSpp$IUCNThreatenedYN[FishSpp$IUCN_Code=="CR"|FishSpp$IUCN_Code=="EN"|FishSpp$IUCN_Code=="VU"]<-1
+table(FishSpp$IUCNThreatenedYN, FishSpp$YearRoundResidentYN)
+FishSpp[FishSpp$IUCN_Code=="N.A.",] #introduced from Asia
+21/208
+FishSpp$CommonName[FishSpp$IUCN_Code=="N.E."]
 
-#We can also pull vulnerabilities from FishBase
-#these ones aren't rounded, but a few are missing, even though I could
-#find them on the web
-Temp<-species(FishSpp$LatinName, fields=c("Vulnerability", "Fresh", "Brack", "Saltwater"))
-FishSpp<-(merge(FishSpp, Temp, by.x="LatinName", by.y="sciname", all.x=TRUE))
-View(FishSpp)
-
-plot(FishSpp$IntrinsicVulnerability~FishSpp$Vulnerability)
-
-#I'm not sure why, but FishBase put some (35) freshwater spp in the list
-#but are also marine/brackish 
-table(FishSpp$Fresh, useNA = "ifany") #35 fresh
-table(FishSpp$Fresh, FishSpp$Saltwater) #35 fresh and marine
-table(FishSpp$Fresh, FishSpp$Brack) 
+##########################US Listing#########################################
+table(FishSpp$USThreatStatus, FishSpp$IUCN_Code)
+FishSpp$CommonName[FishSpp$USThreatStatus=="Endangered"]
 
 #########################################################################################
 ####Create a list of western Atlantic parasite spp using Strona dataset###################
@@ -80,17 +129,17 @@ table(FishSpp$Fresh, FishSpp$Brack)
 #Strona et al. (2013) published a list of ~11,800 fish parasites which is available at
 #DOI: 10.1890/12-1419.1 and http://esapubs.org/archive/ecol/E094/045/#data
 #This probably isn't a complete list, but we can use it to get started
-Strona <- read_csv("~/Documents/Smithsonian Proposal/StronaFishParasiteDataset.csv")
+Strona <- read_csv("~/Documents/Postdoc and TT Job Apps/Smithsonian Proposal/StronaFishParasiteDataset.csv")
 names(Strona)
 
 #Strona$H_SP corresponds to our FishSpp$LatinName category, and both should be based on FishBase names
 #so reduce dataset to only the host spp we care about
 head(Strona$H_SP) 
-HostsandParasites<-subset(Strona, H_SP %in% FishSpp$LatinName)
+HostsandParasites<-subset(Strona, H_SP %in% FishSpp$ValidatedLatinName)
 HostsandParasites$UniqueHspPsp<-paste(HostsandParasites$H_SP, HostsandParasites$P_SP, "")
 
 ##How many species pairs have unknown geography? Strona used "na"
-length(which(HostsandParasites$GEO=="na")) #285
+length(which(HostsandParasites$GEO=="na")) #391
 
 #Let's keep a list of them to check later, but then remove them 
 ParasitesWithoutGeo<-HostsandParasites$UniqueHspPsp[HostsandParasites$GEO=="na"]
@@ -98,8 +147,8 @@ ParasitesWithoutGeo<-HostsandParasites$UniqueHspPsp[HostsandParasites$GEO=="na"]
 #Just keep the confirmed Nearctic parasites
 HostsandParasites<-HostsandParasites[HostsandParasites$GEO=="NEA",]
 
-length(HostsandParasites$UniqueHspPsp)
-length(unique(HostsandParasites$UniqueHspPsp))
+length(HostsandParasites$UniqueHspPsp) #1676
+length(unique(HostsandParasites$UniqueHspPsp)) #1657
 View(HostsandParasites)
 
 #Let's check for duplicates - first, some that aren't EXACT duplicates
@@ -133,7 +182,7 @@ HostsandParasites<-HostsandParasites[HostsandParasites$P_SP!="Catostomus commers
 HostsandParasites<-HostsandParasites[!duplicated(HostsandParasites$UniqueHspPsp),]
 
 length(HostsandParasites$UniqueHspPsp)
-length(unique(HostsandParasites$UniqueHspPsp)) #733 unique host-parasite links
+length(unique(HostsandParasites$UniqueHspPsp)) #1656 unique host-parasite links
 
 #NOTE: Worried that we have a few cases where the same parasite in a host spp
 #is counted as two, due to one misspecified genus. Should fix later.
@@ -144,13 +193,13 @@ length(unique(HostsandParasites$UniqueHspPsp)) #733 unique host-parasite links
 #Make a dataset w/ each parasite spp listed just once (ignore host info)
 UniqueParasites<-HostsandParasites[!duplicated(HostsandParasites$P_SP),]
 table(UniqueParasites$P_T) #* means parasite name isn't validated
-#Acan = 39
-#Cestodes = 67
-#Monogeneans = 113
-#Nematodes = 49
-#Trematodes = 172
-length(UniqueParasites$P_SP) #440 species
-length(unique(UniqueParasites$P_F)) #106 families
+#Acan = 61
+#Cestodes = 130
+#Monogeneans = 251
+#Nematodes = 91
+#Trematodes = 301
+length(UniqueParasites$P_SP) #834 species
+length(unique(UniqueParasites$P_F)) #125 families
 
 #########################################################################################
 ###################Parasite species richness###########################################
@@ -160,9 +209,9 @@ SppRichness<-SppRichness[,-1]
 SppRichness$ParasiteRichness<-aggregate(HostsandParasites$P_SP, by = list(HostsandParasites$H_SP), FUN=length)[,2]
 hist(SppRichness$ParasiteRichness, breaks = 40)
 min(SppRichness$ParasiteRichness); mean(SppRichness$ParasiteRichness); max(SppRichness$ParasiteRichness)
-#1; 8.72619; 55
-names(sort(-table(SppRichness$ParasiteRichness)))[1] #mode = 1
-SppRichness[SppRichness$ParasiteRichness==55,]
+#1; 14.27586; 86
+names(sort(-table(SppRichness$ParasiteRichness)))[1] #mode = 2
+SppRichness[SppRichness$ParasiteRichness==86,] #"Catostomus commersonii"
 
 Temp<-species(SppRichness$H_SP, fields=c("Vulnerability"))
 SppRichness<-(merge(SppRichness, Temp, by.x="H_SP", by.y="sciname", all.x=TRUE))
@@ -254,13 +303,26 @@ plot(residuals(test))
 #########################################################################################
 ###################Number of unique psite spp per host spp##########################
 #########################################################################################
-UniqueParasites<-sort(unique(HostsandParasites$P_SP)) #440 unique parasites
+UniqueParasites<-sort(unique(HostsandParasites$P_SP)) #834 unique parasites
 ParasiteGeneralism<-as.data.frame(table(HostsandParasites$P_SP))
 hist(ParasiteGeneralism[,2], breaks=30) #WOW. Most from just one host spp!!!!
-max(ParasiteGeneralism[,2]) #shared by up to 14 host spp
+max(ParasiteGeneralism[,2]) #shared by up to 21 host spp
 SpecialistYN<-rep(1, length(ParasiteGeneralism[,2])); SpecialistYN[ParasiteGeneralism[,2] > 1]<-0 
-table(SpecialistYN) #only 95 parasites are shared among two or more hosts
+table(SpecialistYN) #only 251 parasites are shared among two or more hosts
+583/834
 
+#I want to know how many of those are from threatened host species
+ThreatenedSpp<-unique(FishSpp$ValidatedLatinName[FishSpp$IUCNThreatenedYN==1])[-1]
+ThreatenedParasites<-HostsandParasites[HostsandParasites$H_SP %in% ThreatenedSpp,] 
+table(ThreatenedParasites$P_T)
+unique(ThreatenedParasites$P_F)
+ParasiteGeneralism2<-as.data.frame(table(ThreatenedParasites$P_SP))
+hist(ParasiteGeneralism2[,2]) #Mostly from a single host spp
+SpecialistYN2<-rep(1, length(ParasiteGeneralism2[,2])); SpecialistYN2[ParasiteGeneralism2[,2] > 1]<-0 
+table(SpecialistYN2)
+78/(78+6) #93% specialists 
+(78-6)/834
+16/61
 #Count number of unique psites per host
 #this is clunky...but it works
 HostsandParasites$SpecialistYN<-NA
@@ -274,8 +336,8 @@ SppRichness$NumUniquePsites<-aggregate(HostsandParasites$SpecialistYN, by=list(H
 hist(SppRichness$NumUniquePsites, breaks=30)
 SppRichness$H_SP[SppRichness$NumUniquePsites==29]
 min(SppRichness$NumUniquePsites); mean(SppRichness$NumUniquePsites); max(SppRichness$NumUniquePsites)
-#0; 4.107143; 29
-names(sort(-table(SppRichness$NumUniquePsites)))[1] #mode = 2
+#0; 5; 42
+names(sort(-table(SppRichness$NumUniquePsites)))[1] #mode = 0
 
 #Look at potential host characteristic correlates of specialist richness
 #First look at each individually, then use multiple regression w/ uncorrelated
@@ -360,17 +422,18 @@ vif(test)
 ####Missing host spp in database####################################################
 #########################################################################################
 #Not all of the MA host spp from the FishBase list had parasites in the Strona database
-length(unique(FishSpp$LatinName)) #174
-length(unique(HostsandParasites$H_SP)) #only 84/174 of the fish spp are in the Strona database
-MissingHosts<-FishSpp$LatinName[!(FishSpp$LatinName %in% HostsandParasites$H_SP)] #list of missing host spp
-MissingHosts #90 missing 
-
-FishSpp$MissingYN<-1; FishSpp$MissingYN[(FishSpp$LatinName %in% HostsandParasites$H_SP)]<-0
+length(unique(FishSpp$ValidatedLatinName)) #208
+length(unique(HostsandParasites$H_SP)) #only 116/208 of the fish spp are in the Strona database
+116/208
+MissingHosts<-FishSpp$LatinName[!(FishSpp$ValidatedLatinName %in% HostsandParasites$H_SP)] #list of missing host spp
+MissingHosts #92 missing 
+(78-6)/834
+FishSpp$MissingYN<-1; FishSpp$MissingYN[(FishSpp$ValidatedLatinName %in% HostsandParasites$H_SP)]<-0
 table(FishSpp$MissingYN)
 
-table(FishSpp$IUCN, FishSpp$MissingYN, useNA = "ifany")
-FishSpp$LCYN<-0; FishSpp$LCYN[FishSpp$IUCN=="LC"]<-1
-xyplot(jitter(FishSpp$MissingYN)~as.factor(FishSpp$IUCN))
+table(FishSpp$IUCN_Code, FishSpp$MissingYN, useNA = "ifany")
+FishSpp$LCYN<-0; FishSpp$LCYN[FishSpp$IUCN_Code=="LC"]<-1
+xyplot(jitter(FishSpp$MissingYN)~as.factor(FishSpp$IUCN_Code))
 table(FishSpp$MissingYN, FishSpp$LCYN)
 test<-glm(FishSpp$MissingYN~FishSpp$LCYN, family="binomial"); summary(test)
 
@@ -433,20 +496,20 @@ length(which(FishSpp$RiskyMissingHostsYN==1))*mean(SppRichness$NumUniquePsites)
 ##########################################################################
 #You can only do up to 1000 records per search w/out emailing big lists
 #So it's easier to pull from the Web
-searchbyterm(FishSpp$LatinName[1])
+searchbyterm(FishSpp$ValidatedLatinName[1])
 CBayVertSearch<-vertsearch(taxon = NULL, "Chesapeake Bay", compact = TRUE)
 
 #already deleted rows for mammals, birds, reptiles, fossil otoliths
 #genus only entries, and dry specimens
-ChesapeakeBayVertNet <- read_delim("~/Documents/Western Atlantic Parasites/ChesapeakeBayVertNet.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
+ChesapeakeBayVertNet <- read_delim("~/Documents/ParasiteConservationOOS and Project/Western Atlantic Parasites/ChesapeakeBayVertNet.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
 
 #Individualcount says how many ind per jar/container/tank/lot/etc
 table(ChesapeakeBayVertNet$individualcount, useNA = "ifany")
-#141 NAs. Let's conservatively say NA=1
+#247 NAs. Let's conservatively say NA=1
 ChesapeakeBayVertNet$individualcount[is.na(ChesapeakeBayVertNet$individualcount)]<-1
 table(ChesapeakeBayVertNet$individualcount, useNA = "ifany")
 
-#8 records have individualcount=0, because they're missing. Remove them
+#7 records have individualcount=0, because they're missing. Remove them
 View(ChesapeakeBayVertNet[ChesapeakeBayVertNet$individualcount==0,])
 ChesapeakeBayVertNet<-ChesapeakeBayVertNet[ChesapeakeBayVertNet$individualcount>0,]
 names(ChesapeakeBayVertNet)
@@ -454,14 +517,42 @@ names(ChesapeakeBayVertNet)
 table(ChesapeakeBayVertNet$institutioncode)
 tail(sort(ChesapeakeBayVertNet$year), 100)
 
+#Sum number of specimens per year
+plot(ChesapeakeBayVertNet$individualcount~ChesapeakeBayVertNet$year, xlim=c(1850, 2018), ylab="Number of Fluid Preserved Specimens")
+Year<-seq(1850, 2018, 1)
+MuseumCountsYear<-aggregate(ChesapeakeBayVertNet$individualcount, by=list(ChesapeakeBayVertNet$year, ChesapeakeBayVertNet$scientificname), FUN=sum)
+names(MuseumCountsYear)<-c("Year", "LatinName","Count")
+plot(MuseumCountsYear$Count~MuseumCountsYear$Year, xlim=c(1850, 2018), ylab="Number of Fluid Preserved Specimens", pch=16, col=rgb(0,0,0, 0.5))
+
+MuseumCountsYear$LCYN<-NA
+for(i in 1:length(MuseumCountsYear$LCYN)) {
+  ifelse(length(which(FishSpp$ValidatedLatinName==MuseumCountsYear$LatinName[i])
+), MuseumCountsYear$LCYN[i]<-FishSpp$LCYN[FishSpp$ValidatedLatinName==MuseumCountsYear$LatinName[i]], MuseumCountsYear$LCYN[i]<-NA)
+}
+
+par(mar=c(2,4,1,1))
+plot(MuseumCountsYear$Count[MuseumCountsYear$LCYN==1]~jitter(MuseumCountsYear$Year[MuseumCountsYear$LCYN==1], 0.2), xlim=c(1850, 2018), ylab="Number of fluid preserved specimens", pch=16, col=rgb(0,0,0, alpha=0.5))
+points(MuseumCountsYear$Count[MuseumCountsYear$LCYN==0]~jitter(MuseumCountsYear$Year[MuseumCountsYear$LCYN==0], 0.2), pch=16, col=rgb(255/255,128/255, 0, alpha=0.5))
+
 #Sum number of specimens per host spp
-unique(ChesapeakeBayVertNet$scientificname) #287 spp
+unique(ChesapeakeBayVertNet$scientificname) #282 spp
 MuseumCounts<-aggregate(ChesapeakeBayVertNet$individualcount, by=list(ChesapeakeBayVertNet$scientificname), FUN=sum)
 names(MuseumCounts)<-c("LatinName", "Count")
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Alosa pesudoharengus"]<-"Alosa pseudoharengus"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Alosa pseuoharengus"]<-"Alosa pseudoharengus"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Anguilla anguilla rostrata"]<-"Anguilla rostrata"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Brevoortia tryannus"]<-"Brevoortia tyrannus"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Centropristis striatus"]<-"Centropristis striata"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Chasmodes bosquianus bosquianus"]<-"Chasmodes bosquianus"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Coelorinchus coelorinchus carminatus"]<-"Coelorinchus carminatus"
+MuseumCounts$LatinName[MuseumCounts$LatinName=="Esox americanusamericanus"]<-"Esox americanus americanus"
+
+#MuseumValidatedNames<-validate_names(MuseumCounts$LatinName)
+#warnings()
 
 FishSpp$SpecimenCounts<-NA
 for(i in 1:length(FishSpp$SpecimenCounts)) {
-  Count<-MuseumCounts$Count[MuseumCounts$LatinName==FishSpp$LatinName[i]]
+  Count<-MuseumCounts$Count[MuseumCounts$LatinName==FishSpp$ValidatedLatinName[i]]
   ifelse(length(Count), FishSpp$SpecimenCounts[i]<-Count, FishSpp$SpecimenCounts[i]<-0)
 }
 
@@ -469,12 +560,14 @@ hist(FishSpp$SpecimenCounts, breaks=40)
 hist(FishSpp$SpecimenCounts[FishSpp$SpecimenCounts > 2], breaks=40)
 FishSpp[FishSpp$SpecimenCounts>3000,]
 
-hist(FishSpp$TrophicLevel)
-plot(FishSpp$SpecimenCounts~FishSpp$TrophicLevel)
-plot(FishSpp$SpecimenCounts~FishSpp$IntrinsicVulnerability)
-xyplot(FishSpp$SpecimenCounts~as.factor(FishSpp$ResilienceCategory))
-xyplot(FishSpp$SpecimenCounts~as.factor(FishSpp$IUCN))
-plot(FishSpp$SpecimenCounts~FishSpp$PhylogeneticDiversityIndex)
-plot(FishSpp$SpecimenCounts~FishSpp$MissingYN)
-sum(FishSpp$SpecimenCounts[FishSpp$MissingYN==1]) #9511
-sum(FishSpp$SpecimenCounts) #23220
+plot(FishSpp$SpecimenCounts~FishSpp$Vulnerability)
+xyplot(FishSpp$SpecimenCounts~as.factor(FishSpp$IUCN_Code))
+
+par(mar=c(2,4,1,1))
+plot(FishSpp$SpecimenCounts[FishSpp$LCYN==1]~jitter(FishSpp$MissingYN[FishSpp$LCYN==1], 0.2), xlim=c(-0.5, 1.5), xaxt="n", xlab=NA, ylab="Number of fluid preserved specimens", pch=16, col=rgb(0,0,0, alpha=0.5))
+points(FishSpp$SpecimenCounts[FishSpp$LCYN==0]~jitter(FishSpp$MissingYN[FishSpp$LCYN==0], 0.2), pch=16, col=rgb(255/255,128/255, 0, alpha=0.5))
+axis(side = 1, at = c(0, 1), tick = 1, line = 0, labels = c("Not missing", "Missing"))
+
+sum(FishSpp$SpecimenCounts[FishSpp$MissingYN==1]) #9598
+sum(FishSpp$SpecimenCounts[FishSpp$LCYN==0]) #2291
+sum(FishSpp$SpecimenCounts) #20585
